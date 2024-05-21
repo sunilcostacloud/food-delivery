@@ -10,6 +10,7 @@ import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import MobileNavLinks from "./MobileNavLinks";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const MobileNav = () => {
   const { isAuthenticated, loginWithRedirect, user } = useAuth0();
@@ -23,7 +24,19 @@ const MobileNav = () => {
         <SheetTitle>
           {isAuthenticated ? (
             <span className="flex items-center font-bold gap-2">
-              <CircleUserRound className="text-orange-500" />
+              {user?.picture && user?.picture?.length > 0 ? (
+                <Avatar>
+                  <AvatarImage src={user?.picture} />
+                  <AvatarFallback>
+                    {user?.name
+                      ?.split(" ")
+                      .map((part) => part.charAt(0))
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <CircleUserRound className="text-orange-500" />
+              )}
               {user?.email}
             </span>
           ) : (
