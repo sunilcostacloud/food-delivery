@@ -9,13 +9,28 @@ import { CircleUserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UsernameMenu = () => {
-    const { user, logout } = useAuth0();
+  const { user, logout } = useAuth0();
+  console.log("sdhflk", user);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center px-3 font-bold hover:text-orange-500 gap-2">
-        <CircleUserRound className="text-orange-500" />
+        {user?.picture && user?.picture?.length >0 ? (
+          <Avatar>
+            <AvatarImage src={user?.picture} />
+            <AvatarFallback>
+              {user?.name
+                ?.split(" ")
+                .map((part) => part.charAt(0))
+                .join("")}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <CircleUserRound className="text-orange-500" />
+        )}
+
         {user?.email}
       </DropdownMenuTrigger>
       <DropdownMenuContent>
