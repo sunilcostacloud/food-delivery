@@ -5,7 +5,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth0 } from "@auth0/auth0-react";
-import { CircleUserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
@@ -13,23 +12,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UsernameMenu = () => {
   const { user, logout } = useAuth0();
-  console.log("sdhflk", user);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center px-3 font-bold hover:text-orange-500 gap-2">
-        {user?.picture && user?.picture?.length >0 ? (
-          <Avatar>
-            <AvatarImage src={user?.picture} />
-            <AvatarFallback>
-              {user?.name
-                ?.split(" ")
-                .map((part) => part.charAt(0))
-                .join("")}
-            </AvatarFallback>
-          </Avatar>
-        ) : (
-          <CircleUserRound className="text-orange-500" />
-        )}
+        <Avatar>
+          <AvatarImage src={user?.picture} />
+          <AvatarFallback>
+            {user?.name
+              ?.split(" ")
+              .map((part) => part.charAt(0))
+              .join("")}
+          </AvatarFallback>
+        </Avatar>
 
         {user?.email}
       </DropdownMenuTrigger>
