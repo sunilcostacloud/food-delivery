@@ -9,7 +9,7 @@ import {
 import { ErrorResponseType } from "@/types/types";
 
 export const myUserInitialState: myUserInitialStateType = {
-  // create user
+  // create new user
   createNewUserData: null,
   createNewUserIsLoading: false,
   createNewUserIsError: false,
