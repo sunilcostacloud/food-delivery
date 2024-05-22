@@ -57,7 +57,7 @@ const AuthCallbackPage = () => {
     handleUserCreation();
   }, [createNewUserIsSuccess, createNewUserIsError, createNewUserError, navigate, loginWithRedirect]);
 
-  return <>{createNewUserIsLoading ? <>Loading..</> : null}</>;
+  return <>{createNewUserIsLoading ? <h1>Loading..</h1> : null}</>;
 };
 
 export default AuthCallbackPage;
