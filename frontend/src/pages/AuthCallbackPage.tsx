@@ -21,7 +21,7 @@ const AuthCallbackPage = () => {
   useEffect(() => {
     const fetchNewUser = async () => {
       const token = await getAccessTokenSilently();
-      if (token && user?.sub && user?.email && !hasCreatedUser.current) {
+      if (user?.sub && user?.email && !hasCreatedUser.current) {
         const payload = {
           token,
           credentials: { auth0Id: user.sub, email: user.email, token }
