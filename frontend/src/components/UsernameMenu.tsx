@@ -46,7 +46,6 @@ const UsernameMenu = () => {
         <DropdownMenuItem>
           <Button
             onClick={() => {
-              localStorage.removeItem("token")
               logout()
             }}
             className="flex flex-1 font-bold bg-orange-500"
