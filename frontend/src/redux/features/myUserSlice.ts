@@ -7,7 +7,6 @@ import {
   myUserInitialStateType,
 } from "@/types/userTypes/userTypes";
 import { ErrorResponseType } from "@/types/types";
-import { useAuth0 } from "@auth0/auth0-react";
 
 export const myUserInitialState: myUserInitialStateType = {
   // create new user
@@ -21,9 +20,7 @@ export const myUserInitialState: myUserInitialStateType = {
 export const createNewUserRequest = createAsyncThunk(
   "myUser/createNewUserRequest",
   async (payload: CreateUserPayload) => {
-    const { getAccessTokenSilently } = useAuth0();
-    const accessToken = await getAccessTokenSilently();
-    console.log("accessToken", accessToken)
+   const accessToken = localStorage.getItem("token")
     const headers = {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
@@ -79,9 +76,7 @@ export const myUserSlice = createSlice({
         state.createNewUserIsLoading = false;
         state.createNewUserIsError = true;
         state.createNewUserError = "";
-        state.createNewUserError = action.error.message
-          ? action.error.message
-          : "An unknown error occurred";
+        state.createNewUserError = action.error.message || "An unknown error occurred";
         state.createNewUserIsSuccess = false;
       });
   },
