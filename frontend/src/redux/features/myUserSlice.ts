@@ -20,16 +20,16 @@ export const myUserInitialState: myUserInitialStateType = {
 export const createNewUserRequest = createAsyncThunk(
   "myUser/createNewUserRequest",
   async (payload: CreateUserPayload) => {
-   const accessToken = localStorage.getItem("token")
+   const {token, credentials } = payload
     const headers = {
-      Authorization: `Bearer ${accessToken}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     };
 
     try {
       const { data } = await axios.post<CreateUserResponse>(
         `${API_BASE_URL}/api/my/user/createNewUser`,
-        payload,
+        credentials,
         { headers }
       );
 

@@ -8,8 +8,11 @@ export type User = {
 };
 
 export type CreateUserPayload = {
-  auth0Id: string;
-  email: string;
+  credentials: {
+    auth0Id: string;
+    email: string;
+  }
+  token: string;
 };
 
 export type CreateUserResponse = {
