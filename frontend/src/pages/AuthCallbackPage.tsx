@@ -3,7 +3,8 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "sonner"
+
 
 const AuthCallbackPage = () => {
   const navigate = useNavigate();
@@ -38,10 +39,10 @@ const AuthCallbackPage = () => {
   useEffect(() => {
     const handleUserCreation = async () => {
       if (createNewUserIsSuccess && isAuthenticated && user) {
-        toast("Login Successful", { autoClose: 2000, type: "success" });
+        toast.success("Login Successful");
         navigate("/");
       } else if (createNewUserIsError) {
-        toast(createNewUserError, { autoClose: 2000, type: "error" });
+        toast.error(createNewUserError);
         await loginWithRedirect();
       }
     };

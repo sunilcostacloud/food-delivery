@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import HomePage from "./pages/HomePage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
+import UserProfilePage from "./pages/UserProfilePage";
 
 export default function App() {
   return (
@@ -15,7 +16,14 @@ export default function App() {
         }
       />
       <Route path="/auth-callback" element={<AuthCallbackPage />} />
-      <Route path="/user-profile" element={<div>User Profile</div>} />
+      <Route
+          path="/user-profile"
+          element={
+            <Layout>
+              <UserProfilePage />
+            </Layout>
+          }
+        />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
