@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler  } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,7 +14,10 @@ import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
-import { User } from "@/types/userTypes/userTypes";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
+import { UpdateUserPayload, UpdateUserTypes } from "@/types/userTypes/userTypes";
+import { UpdateCurrentUserRequest } from "@/redux/features/myUserSlice";
 
 const formSchema = z.object({
   email: z.string().optional(),
@@ -27,34 +30,42 @@ const formSchema = z.object({
 export type UserFormData = z.infer<typeof formSchema>;
 
 type Props = {
-  // currentUser: User;
-  // onSave: (userProfileData: UserFormData) => void;
-  // isLoading: boolean;
   title?: string;
   buttonText?: string;
 };
 
 const UserProfileForm = ({
-  // onSave,
-  // isLoading,
-  // currentUser,
   title = "User Profile",
   buttonText = "Submit",
 }: Props) => {
+  const { getCurrentUserData: currentUser, updateCurrentUserIsLoading, updateCurrentUserIsError, updateCurrentUserData, updateCurrentUserError, updateCurrentUserIsSuccess } = useAppSelector((state) => state.myUser);
+
+  console.log("jkdskfhdsjhfl", updateCurrentUserIsError, updateCurrentUserData, updateCurrentUserError, updateCurrentUserIsSuccess)
+
+ const dispatch = useAppDispatch()
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
-    // defaultValues: currentUser,
+    defaultValues: currentUser ? currentUser : undefined,
   });
 
-  // useEffect(() => {
-  //   form.reset(currentUser);
-  // }, [currentUser, form]);
+  useEffect(() => {
+    if(currentUser) {
+      form.reset(currentUser);
+    }
+  }, [currentUser, form]);
+  
 
-  const handleSave = (data) => {
-   console.log("testData", data)
-  }
+  const { getAccessTokenSilently } = useAuth0();
 
-  const isLoading = false
+
+  const handleSave: SubmitHandler<UserFormData> = async (formData: UpdateUserTypes) => {
+    const token = await getAccessTokenSilently();
+    const payload: UpdateUserPayload = {
+      token,
+      formdata: formData,
+    };
+    dispatch(UpdateCurrentUserRequest(payload));
+  };
 
   return (
     <Form {...form}>
@@ -136,7 +147,7 @@ const UserProfileForm = ({
             )}
           />
         </div>
-        {isLoading ? (
+        {updateCurrentUserIsLoading ? (
           <LoadingButton />
         ) : (
           <Button type="submit" className="bg-orange-500">
