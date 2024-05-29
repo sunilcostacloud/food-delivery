@@ -3,6 +3,7 @@ import Layout from "./layouts/Layout";
 import HomePage from "./pages/HomePage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
 export default function App() {
   return (
@@ -16,7 +17,9 @@ export default function App() {
         }
       />
       <Route path="/auth-callback" element={<AuthCallbackPage />} />
-      <Route
+
+      <Route element={<ProtectedRoute />}>
+        <Route
           path="/user-profile"
           element={
             <Layout>
@@ -24,6 +27,7 @@ export default function App() {
             </Layout>
           }
         />
+      </Route>
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
