@@ -18,17 +18,6 @@ export type Restaurant = {
   lastUpdated: string;
 };
 
-// export type CreateRestaurantForm = {
-//   restaurantName: string;
-//   city: string;
-//   country: string;
-//   deliveryPrice: number;
-//   estimatedDeliveryTime: number;
-//   cuisines: string[];
-//   menuItems: MenuItem[];
-//   imageFile: File;
-// };
-
 export type CreateRestaurantPayload = {
   formData: FormData;
   token: string;

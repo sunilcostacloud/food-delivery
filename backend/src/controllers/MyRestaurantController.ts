@@ -13,6 +13,19 @@ const uploadImage = async (file: Express.Multer.File) => {
     return uploadResponse.url;
   };
 
+  const getMyRestaurant = async (req: Request, res: Response) => {
+    try {
+      const restaurant = await Restaurant.findOne({ user: req.userId });
+      if (!restaurant) {
+        return res.status(404).json({ message: "restaurant not found" });
+      }
+      res.json(restaurant);
+    } catch (error) {
+      console.log("error", error);
+      res.status(500).json({ message: "Error fetching restaurant" });
+    }
+  };
+
 const createMyRestaurant = async (req: Request, res: Response) => {
     try {
       const existingRestaurant = await Restaurant.findOne({ user: req.userId });
@@ -42,4 +55,5 @@ const createMyRestaurant = async (req: Request, res: Response) => {
 
   export default {
     createMyRestaurant,
+    getMyRestaurant,
   };
