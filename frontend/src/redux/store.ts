@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import myUserReducer from "./features/myUserSlice";
+import myRestaurantReducer from "./features/myRestaurantSlice";
 
 export const store = configureStore({
   reducer: {
     myUser: myUserReducer,
+    myRestaurant: myRestaurantReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

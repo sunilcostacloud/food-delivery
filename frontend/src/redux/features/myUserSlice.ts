@@ -41,7 +41,6 @@ export const createNewUserRequest = createAsyncThunk(
     const { token, credentials } = payload;
     const headers = {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     };
 
     try {
@@ -67,7 +66,6 @@ export const getCurrentUserRequest = createAsyncThunk(
     const { token } = payload;
     const headers = {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     };
 
     try {
@@ -92,7 +90,6 @@ export const UpdateCurrentUserRequest = createAsyncThunk(
     const { token, formdata } = payload;
     const headers = {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
     };
 
     try {
