@@ -57,9 +57,7 @@ const ManageRestaurantForm = () => {
 
   const {
     createNewRestaurantIsLoading,
-    createNewRestaurantIsError,
-    createNewRestaurantError,
-    createNewRestaurantIsSuccess
+    // createNewRestaurantIsSuccess
   } = useAppSelector((state) => state.myRestaurant);
 
   const form = useForm<RestaurantFormData>({

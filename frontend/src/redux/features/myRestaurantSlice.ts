@@ -16,6 +16,13 @@ export const myRestaurantInitialState: myRestaurantInitialStateType = {
   createNewRestaurantIsError: false,
   createNewRestaurantError: "",
   createNewRestaurantIsSuccess: false,
+
+  // get my restaurant
+  getMyRestaurantData: null,
+  getMyRestaurantIsLoading: false,
+  getMyRestaurantIsError: false,
+  getMyRestaurantError: "",
+  getMyRestaurantIsSuccess: false,
 };
 
 export const createNewRestaurantAction = createAsyncThunk(
@@ -31,6 +38,30 @@ export const createNewRestaurantAction = createAsyncThunk(
       const { data } = await axios.post<Restaurant>(
         `${API_BASE_URL}/api/my/restaurant/createNewRestaurant`,
         formData,
+        { headers }
+      );
+
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponseType>;
+      const errorMessage =
+        axiosError.response?.data?.message || "An unknown error occurred";
+      throw new Error(errorMessage);
+    }
+  }
+);
+
+export const getMyRestaurantRequest = createAsyncThunk(
+  "myRestaurant/getMyRestaurantRequest",
+  async (payload: {token: string}) => {
+    const { token } = payload;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    try {
+      const { data } = await axios.get<Restaurant>(
+        `${API_BASE_URL}/api/my/restaurant/getMyRestaurant`,
         { headers }
       );
 
@@ -85,7 +116,28 @@ export const myRestaurantSlice = createSlice({
 
         toast.error(action.error.message || "An unknown error occurred");
         myRestaurantSlice.caseReducers.resetCreateNewRestaurant(state);
-      });
+      })
+      .addCase(getMyRestaurantRequest.pending, (state) => {
+        state.getMyRestaurantData = null;
+        state.getMyRestaurantIsLoading = true;
+        state.getMyRestaurantIsError = false;
+        state.getMyRestaurantError = "";
+        state.getMyRestaurantIsSuccess = false;
+      })
+      .addCase(getMyRestaurantRequest.fulfilled, (state, action) => {
+        state.getMyRestaurantData = action.payload;
+        state.getMyRestaurantIsLoading = false;
+        state.getMyRestaurantIsError = false;
+        state.getMyRestaurantError = "";
+        state.getMyRestaurantIsSuccess = true;
+      })
+      .addCase(getMyRestaurantRequest.rejected, (state, action) => {
+        state.getMyRestaurantData = null;
+        state.getMyRestaurantIsLoading = false;
+        state.getMyRestaurantIsError = true;
+        state.getMyRestaurantError = action.error.message || "An unknown error occurred";
+        state.getMyRestaurantIsSuccess = false;
+      })
   },
 });
 

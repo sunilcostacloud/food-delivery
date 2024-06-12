@@ -30,4 +30,11 @@ export type myRestaurantInitialStateType = {
   createNewRestaurantIsError: boolean;
   createNewRestaurantError: string;
   createNewRestaurantIsSuccess: boolean;
+
+  // get my restaurant
+  getMyRestaurantData: Restaurant | null;
+  getMyRestaurantIsLoading: boolean,
+  getMyRestaurantIsError: boolean,
+  getMyRestaurantError: string,
+  getMyRestaurantIsSuccess: boolean,
 };
