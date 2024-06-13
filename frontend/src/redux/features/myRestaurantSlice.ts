@@ -2,7 +2,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { API_BASE_URL } from "../baseURL/baseURL";
 import { ErrorResponseType } from "@/types/types";
-import { toast } from "sonner";
+import { toast } from 'react-toastify';
+
 import {
   CreateRestaurantPayload,
   Restaurant,
@@ -102,7 +103,7 @@ export const myRestaurantSlice = createSlice({
         state.createNewRestaurantIsError = false;
         state.createNewRestaurantError = "";
         state.createNewRestaurantIsSuccess = true;
-        toast.success("Restaurant Created Successfully!");
+        toast('Restaurant Created Successfully!', { autoClose: 2000, type: 'success' })
         myRestaurantSlice.caseReducers.resetCreateNewRestaurant(state);
       })
       .addCase(createNewRestaurantAction.rejected, (state, action) => {
@@ -114,7 +115,7 @@ export const myRestaurantSlice = createSlice({
           action.error.message || "An unknown error occurred";
         state.createNewRestaurantIsSuccess = false;
 
-        toast.error(action.error.message || "An unknown error occurred");
+        toast(action.error.message || "An unknown error occurred", { autoClose: 2000, type: 'error' })
         myRestaurantSlice.caseReducers.resetCreateNewRestaurant(state);
       })
       .addCase(getMyRestaurantRequest.pending, (state) => {

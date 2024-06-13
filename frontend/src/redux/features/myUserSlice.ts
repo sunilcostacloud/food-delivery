@@ -10,7 +10,7 @@ import {
   myUserInitialStateType,
 } from "@/types/userTypes/userTypes";
 import { ErrorResponseType } from "@/types/types";
-import { toast } from "sonner"
+import { toast } from 'react-toastify';
 
 export const myUserInitialState: myUserInitialStateType = {
   // create new user
@@ -198,7 +198,7 @@ export const myUserSlice = createSlice({
         state.updateCurrentUserIsError = false;
         state.updateCurrentUserError = "";
         state.updateCurrentUserIsSuccess = true;
-        toast.success("User Updated Successfully!");
+        toast('User Updated Successfully!', { autoClose: 2000, type: 'success' })
         myUserSlice.caseReducers.resetUpdateCurrentUser(state)
       })
       .addCase(UpdateCurrentUserRequest.rejected, (state, action) => {
@@ -209,7 +209,7 @@ export const myUserSlice = createSlice({
           action.error.message || "An unknown error occurred";
         state.updateCurrentUserIsSuccess = false;
 
-        toast.error(action.error.message || "An unknown error occurred");
+        toast(action.error.message || "An unknown error occurred", { autoClose: 2000, type: 'error' })
         myUserSlice.caseReducers.resetUpdateCurrentUser(state)
       });
   },

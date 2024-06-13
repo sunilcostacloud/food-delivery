@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
 import { createNewRestaurantAction } from "@/redux/features/myRestaurantSlice";
+import { useEffect } from "react";
+import { toast } from 'react-toastify';
 
 const formSchema = z
   .object({
@@ -57,13 +59,22 @@ const ManageRestaurantForm = () => {
 
   const {
     createNewRestaurantIsLoading,
-    createNewRestaurantIsSuccess,
     getMyRestaurantData,
     getMyRestaurantIsLoading,
     getMyRestaurantIsError,
     getMyRestaurantError,
     getMyRestaurantIsSuccess,
   } = useAppSelector((state) => state.myRestaurant);
+
+  useEffect(() => {
+  if(getMyRestaurantIsError){
+    if(getMyRestaurantError === "restaurant not found"){
+      toast("Create New Restaurant", { autoClose: 2000, type: 'info' })
+    } else{
+      toast(getMyRestaurantError, { autoClose: 2000, type: 'error' })
+    }
+  }
+  },[getMyRestaurantIsError])
 
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(formSchema),
@@ -73,7 +84,15 @@ const ManageRestaurantForm = () => {
     },
   });
 
-  const createNewRestaurant = async (formData : FormData) => {
+  useEffect(() => {
+    if (!getMyRestaurantData) {
+      return;
+    }
+
+    form.reset(getMyRestaurantData);
+  }, [form, getMyRestaurantData, getMyRestaurantIsSuccess]);
+
+  const createNewRestaurant = async (formData: FormData) => {
     const token = await getAccessTokenSilently();
 
     const payload = {
@@ -90,10 +109,7 @@ const ManageRestaurantForm = () => {
     formData.append("city", formDataJson.city);
     formData.append("country", formDataJson.country);
 
-    formData.append(
-      "deliveryPrice",
-      formDataJson.deliveryPrice.toString()
-    );
+    formData.append("deliveryPrice", formDataJson.deliveryPrice.toString());
     formData.append(
       "estimatedDeliveryTime",
       formDataJson.estimatedDeliveryTime.toString()
@@ -105,7 +121,7 @@ const ManageRestaurantForm = () => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
       formData.append(
         `menuItems[${index}][price]`,
-        (menuItem.price * 100).toString()
+        (menuItem.price).toString()
       );
     });
 
@@ -113,25 +129,42 @@ const ManageRestaurantForm = () => {
       formData.append(`imageFile`, formDataJson.imageFile);
     }
 
-    createNewRestaurant(formData)
+    createNewRestaurant(formData);
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8 bg-gray-50 p-10 rounded-lg"
-      >
-        <DetailsSection />
-        <Separator />
-        <CuisinesSection />
-        <Separator />
-        <MenuSection />
-        <Separator />
-        <ImageSection />
-      {createNewRestaurantIsLoading ? <LoadingButton /> : <Button type="submit">Submit</Button>}
-      </form>
-    </Form>
+    <>
+      {getMyRestaurantIsLoading && (
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-bold mb-4 text-orange-500">
+            Getting your Restaurant Details
+          </h1>
+          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-full bg-orange-500 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      )}
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8 bg-gray-50 p-10 rounded-lg"
+        >
+          <DetailsSection />
+          <Separator />
+          <CuisinesSection />
+          <Separator />
+          <MenuSection />
+          <Separator />
+          <ImageSection />
+          {createNewRestaurantIsLoading || getMyRestaurantIsLoading ? (
+            <LoadingButton />
+          ) : (
+            <Button type="submit">Submit</Button>
+          )}
+        </form>
+      </Form>
+    </>
   );
 };
 
