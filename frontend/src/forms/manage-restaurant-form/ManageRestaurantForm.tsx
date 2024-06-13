@@ -11,9 +11,12 @@ import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
-import { createNewRestaurantAction } from "@/redux/features/myRestaurantSlice";
+import {
+  createNewRestaurantAction,
+  updateRestaurantAction,
+} from "@/redux/features/myRestaurantSlice";
 import { useEffect } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const formSchema = z
   .object({
@@ -64,17 +67,20 @@ const ManageRestaurantForm = () => {
     getMyRestaurantIsError,
     getMyRestaurantError,
     getMyRestaurantIsSuccess,
+    updateRestaurantIsLoading,
   } = useAppSelector((state) => state.myRestaurant);
 
+  const isEditing = !!getMyRestaurantData;
+
   useEffect(() => {
-  if(getMyRestaurantIsError){
-    if(getMyRestaurantError === "restaurant not found"){
-      toast("Create New Restaurant", { autoClose: 2000, type: 'info' })
-    } else{
-      toast(getMyRestaurantError, { autoClose: 2000, type: 'error' })
+    if (getMyRestaurantIsError) {
+      if (getMyRestaurantError === "restaurant not found") {
+        toast("Create New Restaurant", { autoClose: 2000, type: "info" });
+      } else {
+        toast(getMyRestaurantError, { autoClose: 2000, type: "error" });
+      }
     }
-  }
-  },[getMyRestaurantIsError])
+  }, [getMyRestaurantIsError]);
 
   const form = useForm<RestaurantFormData>({
     resolver: zodResolver(formSchema),
@@ -92,14 +98,19 @@ const ManageRestaurantForm = () => {
     form.reset(getMyRestaurantData);
   }, [form, getMyRestaurantData, getMyRestaurantIsSuccess]);
 
-  const createNewRestaurant = async (formData: FormData) => {
+  const createOrUpdateRestaurant = async (formData: FormData) => {
     const token = await getAccessTokenSilently();
 
     const payload = {
       token,
       formData,
     };
-    dispatch(createNewRestaurantAction(payload));
+
+    if (isEditing) {
+      dispatch(updateRestaurantAction(payload));
+    } else {
+      dispatch(createNewRestaurantAction(payload));
+    }
   };
 
   const onSubmit = (formDataJson: RestaurantFormData) => {
@@ -119,17 +130,14 @@ const ManageRestaurantForm = () => {
     });
     formDataJson.menuItems.forEach((menuItem, index) => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
-      formData.append(
-        `menuItems[${index}][price]`,
-        (menuItem.price).toString()
-      );
+      formData.append(`menuItems[${index}][price]`, menuItem.price.toString());
     });
 
     if (formDataJson.imageFile) {
       formData.append(`imageFile`, formDataJson.imageFile);
     }
 
-    createNewRestaurant(formData);
+    createOrUpdateRestaurant(formData);
   };
 
   return (
@@ -157,7 +165,7 @@ const ManageRestaurantForm = () => {
           <MenuSection />
           <Separator />
           <ImageSection />
-          {createNewRestaurantIsLoading || getMyRestaurantIsLoading ? (
+          {createNewRestaurantIsLoading || getMyRestaurantIsLoading || updateRestaurantIsLoading ? (
             <LoadingButton />
           ) : (
             <Button type="submit">Submit</Button>

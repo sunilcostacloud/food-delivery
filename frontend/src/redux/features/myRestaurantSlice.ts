@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { API_BASE_URL } from "../baseURL/baseURL";
 import { ErrorResponseType } from "@/types/types";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 import {
   CreateRestaurantPayload,
@@ -25,12 +25,12 @@ export const myRestaurantInitialState: myRestaurantInitialStateType = {
   getMyRestaurantError: "",
   getMyRestaurantIsSuccess: false,
 
-   // update New Restaurant
-   updateRestaurantData: null,
-   updateRestaurantIsLoading: false,
-   updateRestaurantIsError: false,
-   updateRestaurantError: "",
-   updateRestaurantIsSuccess: false,
+  // update New Restaurant
+  updateRestaurantData: null,
+  updateRestaurantIsLoading: false,
+  updateRestaurantIsError: false,
+  updateRestaurantError: "",
+  updateRestaurantIsSuccess: false,
 };
 
 export const createNewRestaurantAction = createAsyncThunk(
@@ -61,7 +61,7 @@ export const createNewRestaurantAction = createAsyncThunk(
 
 export const getMyRestaurantRequest = createAsyncThunk(
   "myRestaurant/getMyRestaurantRequest",
-  async (payload: {token: string}) => {
+  async (payload: { token: string }) => {
     const { token } = payload;
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -120,9 +120,17 @@ export const myRestaurantSlice = createSlice({
       state.createNewRestaurantError = "";
       state.createNewRestaurantIsSuccess = false;
     },
+    resetUpdateRestaurant(state) {
+      state.updateRestaurantData = null;
+      state.updateRestaurantIsLoading = false;
+      state.updateRestaurantIsError = false;
+      state.updateRestaurantError = "";
+      state.updateRestaurantIsSuccess = false;
+    },
   },
   extraReducers(builder) {
     builder
+      // create new restaurant
       .addCase(createNewRestaurantAction.pending, (state) => {
         state.createNewRestaurantData = null;
         state.createNewRestaurantIsLoading = true;
@@ -146,9 +154,14 @@ export const myRestaurantSlice = createSlice({
           action.error.message || "An unknown error occurred";
         state.createNewRestaurantIsSuccess = false;
 
-        toast(action.error.message || "An unknown error occurred", { autoClose: 2000, type: 'error' })
+        toast(action.error.message || "An unknown error occurred", {
+          autoClose: 2000,
+          type: "error",
+        });
         myRestaurantSlice.caseReducers.resetCreateNewRestaurant(state);
       })
+
+      // get restaurant details
       .addCase(getMyRestaurantRequest.pending, (state) => {
         state.getMyRestaurantData = null;
         state.getMyRestaurantIsLoading = true;
@@ -167,11 +180,43 @@ export const myRestaurantSlice = createSlice({
         state.getMyRestaurantData = null;
         state.getMyRestaurantIsLoading = false;
         state.getMyRestaurantIsError = true;
-        state.getMyRestaurantError = action.error.message || "An unknown error occurred";
+        state.getMyRestaurantError =
+          action.error.message || "An unknown error occurred";
         state.getMyRestaurantIsSuccess = false;
       })
+
+      // update restaurant
+      .addCase(updateRestaurantAction.pending, (state) => {
+        state.updateRestaurantData = null;
+        state.updateRestaurantIsLoading = true;
+        state.updateRestaurantIsError = false;
+        state.updateRestaurantError = "";
+        state.updateRestaurantIsSuccess = false;
+      })
+      .addCase(updateRestaurantAction.fulfilled, (state, action) => {
+        state.updateRestaurantData = action.payload;
+        state.updateRestaurantIsLoading = false;
+        state.updateRestaurantIsError = false;
+        state.updateRestaurantError = "";
+        state.updateRestaurantIsSuccess = true;
+      })
+      .addCase(updateRestaurantAction.rejected, (state, action) => {
+        state.updateRestaurantData = null;
+        state.updateRestaurantIsLoading = false;
+        state.updateRestaurantIsError = true;
+        state.updateRestaurantError =
+          action.error.message || "An unknown error occurred";
+        state.updateRestaurantIsSuccess = false;
+
+        toast(action.error.message || "An unknown error occurred", {
+          autoClose: 2000,
+          type: "error",
+        });
+        myRestaurantSlice.caseReducers.resetUpdateRestaurant(state);
+      });
   },
 });
 
-export const { resetCreateNewRestaurant } = myRestaurantSlice.actions;
+export const { resetCreateNewRestaurant, resetUpdateRestaurant } =
+  myRestaurantSlice.actions;
 export default myRestaurantSlice.reducer;

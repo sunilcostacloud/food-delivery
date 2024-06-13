@@ -10,7 +10,7 @@ const uploadImage = async (file: Express.Multer.File) => {
     const dataURI = `data:${image.mimetype};base64,${base64Image}`;
   
     const uploadResponse = await cloudinary.v2.uploader.upload(dataURI);
-    return uploadResponse.url;
+    return { url: uploadResponse.url, publicId: uploadResponse.public_id };
   };
 
   const getMyRestaurant = async (req: Request, res: Response) => {
@@ -37,11 +37,13 @@ const createMyRestaurant = async (req: Request, res: Response) => {
       }
 
       // to make single user create multiple restaurants remove above code
-  
-      const imageUrl = await uploadImage(req.file as Express.Multer.File);
+
+      const { url, publicId } = await uploadImage(req.file as Express.Multer.File);
+
   
       const restaurant = new Restaurant(req.body);
-      restaurant.imageUrl = imageUrl;
+      restaurant.imageUrl = url;
+    restaurant.imagePublicId = publicId;
       restaurant.user = new mongoose.Types.ObjectId(req.userId);
       restaurant.lastUpdated = new Date();
       await restaurant.save();
@@ -71,10 +73,15 @@ const createMyRestaurant = async (req: Request, res: Response) => {
       restaurant.cuisines = req.body.cuisines;
       restaurant.menuItems = req.body.menuItems;
       restaurant.lastUpdated = new Date();
-  
+
       if (req.file) {
-        const imageUrl = await uploadImage(req.file as Express.Multer.File);
-        restaurant.imageUrl = imageUrl;
+        // Delete the old image
+        await cloudinary.v2.uploader.destroy(restaurant.imagePublicId);
+  
+        // Upload the new image
+        const { url, publicId } = await uploadImage(req.file as Express.Multer.File);
+        restaurant.imageUrl = url;
+        restaurant.imagePublicId = publicId; // save the new public ID
       }
   
       await restaurant.save();

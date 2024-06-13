@@ -1,12 +1,12 @@
 import ManageRestaurantForm from "@/forms/manage-restaurant-form/ManageRestaurantForm";
-import { getMyRestaurantRequest, resetCreateNewRestaurant } from "@/redux/features/myRestaurantSlice";
+import { getMyRestaurantRequest, resetCreateNewRestaurant, resetUpdateRestaurant } from "@/redux/features/myRestaurantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { toast } from 'react-toastify';
 
 const ManageRestaurantPage = () => {
-  const { createNewRestaurantIsSuccess } = useAppSelector(
+  const { createNewRestaurantIsSuccess, updateRestaurantIsSuccess } = useAppSelector(
     (state) => state.myRestaurant
   );
 
@@ -28,8 +28,13 @@ const ManageRestaurantPage = () => {
     dispatch(resetCreateNewRestaurant())
     }
 
+    if(updateRestaurantIsSuccess){
+      toast('Restaurant Updated Successfully!', { autoClose: 2000, type: 'success' })
+      dispatch(resetUpdateRestaurant())
+      }
+
     getMyRestaurantDetails();
-  }, [createNewRestaurantIsSuccess]);
+  }, [createNewRestaurantIsSuccess, updateRestaurantIsSuccess]);
 
   return (
     <>
