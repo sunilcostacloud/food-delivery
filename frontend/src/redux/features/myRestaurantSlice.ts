@@ -24,6 +24,13 @@ export const myRestaurantInitialState: myRestaurantInitialStateType = {
   getMyRestaurantIsError: false,
   getMyRestaurantError: "",
   getMyRestaurantIsSuccess: false,
+
+   // update New Restaurant
+   updateRestaurantData: null,
+   updateRestaurantIsLoading: false,
+   updateRestaurantIsError: false,
+   updateRestaurantError: "",
+   updateRestaurantIsSuccess: false,
 };
 
 export const createNewRestaurantAction = createAsyncThunk(
@@ -76,6 +83,32 @@ export const getMyRestaurantRequest = createAsyncThunk(
   }
 );
 
+export const updateRestaurantAction = createAsyncThunk(
+  "myRestaurant/updateRestaurantAction",
+  async (payload: CreateRestaurantPayload) => {
+    const { token, formData } = payload;
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    try {
+      const { data } = await axios.put<Restaurant>(
+        `${API_BASE_URL}/api/my/restaurant/updateMyRestaurant`,
+        formData,
+        { headers }
+      );
+
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponseType>;
+      const errorMessage =
+        axiosError.response?.data?.message || "An unknown error occurred";
+      throw new Error(errorMessage);
+    }
+  }
+);
+
 export const myRestaurantSlice = createSlice({
   name: "myRestaurant",
   initialState: myRestaurantInitialState,
@@ -103,8 +136,6 @@ export const myRestaurantSlice = createSlice({
         state.createNewRestaurantIsError = false;
         state.createNewRestaurantError = "";
         state.createNewRestaurantIsSuccess = true;
-        toast('Restaurant Created Successfully!', { autoClose: 2000, type: 'success' })
-        myRestaurantSlice.caseReducers.resetCreateNewRestaurant(state);
       })
       .addCase(createNewRestaurantAction.rejected, (state, action) => {
         state.createNewRestaurantData = null;
