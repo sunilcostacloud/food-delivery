@@ -23,9 +23,12 @@ const ManageRestaurantPage = () => {
   };
 
   useEffect(() => {
+    if(createNewRestaurantIsSuccess){
     toast('Restaurant Created Successfully!', { autoClose: 2000, type: 'success' })
-    getMyRestaurantDetails();
     dispatch(resetCreateNewRestaurant())
+    }
+
+    getMyRestaurantDetails();
   }, [createNewRestaurantIsSuccess]);
 
   return (
