@@ -5,7 +5,14 @@ const ProtectedRoute = () => {
   const { isAuthenticated, isLoading } = useAuth0();
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold mb-4 text-orange-500">Loading...</h1>
+        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+          <div className="h-full bg-orange-500 rounded-full animate-pulse"></div>
+        </div>
+      </div>
+    );
   }
 
   if (isAuthenticated) {
