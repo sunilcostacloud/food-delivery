@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import {
   CreateRestaurantPayload,
   Restaurant,
+  SearchDataResponse,
+  SearchState,
   myRestaurantInitialStateType,
 } from "@/types/restaurantTypes/restaurantTypes";
 
@@ -31,6 +33,13 @@ export const myRestaurantInitialState: myRestaurantInitialStateType = {
   updateRestaurantIsError: false,
   updateRestaurantError: "",
   updateRestaurantIsSuccess: false,
+
+  // getSearchResultsAction
+  getSearchResultsData: null,
+  getSearchResultsIsLoading: false,
+  getSearchResultsIsError: false,
+  getSearchResultsError: "",
+  getSearchResultsIsSuccess: false,
 };
 
 export const createNewRestaurantAction = createAsyncThunk(
@@ -96,6 +105,36 @@ export const updateRestaurantAction = createAsyncThunk(
       const { data } = await axios.put<Restaurant>(
         `${API_BASE_URL}/api/my/restaurant/updateMyRestaurant`,
         formData,
+        { headers }
+      );
+
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponseType>;
+      const errorMessage =
+        axiosError.response?.data?.message || "An unknown error occurred";
+      throw new Error(errorMessage);
+    }
+  }
+);
+
+export const getSearchResultsAction = createAsyncThunk(
+  "myRestaurant/getSearchResultsAction",
+  async (payload: { token: string, searchState: SearchState, city?: string }) => {
+    const { token, searchState, city } = payload;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const params = new URLSearchParams();
+    params.set("searchQuery", searchState.searchQuery);
+    params.set("page", searchState.page.toString());
+    params.set("selectedCuisines", searchState.selectedCuisines.join(","));
+    params.set("sortOption", searchState.sortOption);
+
+    try {
+      const { data } = await axios.get<SearchDataResponse>(
+        `${API_BASE_URL}/api/restaurant/search/${city}?${params.toString()}`,
         { headers }
       );
 
@@ -213,6 +252,30 @@ export const myRestaurantSlice = createSlice({
           type: "error",
         });
         myRestaurantSlice.caseReducers.resetUpdateRestaurant(state);
+      })
+
+      // getSearchResultsAction
+      .addCase(getSearchResultsAction.pending, (state) => {
+        state.getSearchResultsData = null;
+        state.getSearchResultsIsLoading = true;
+        state.getSearchResultsIsError = false;
+        state.getSearchResultsError = "";
+        state.getSearchResultsIsSuccess = false;
+      })
+      .addCase(getSearchResultsAction.fulfilled, (state, action) => {
+        state.getSearchResultsData = action.payload;
+        state.getSearchResultsIsLoading = false;
+        state.getSearchResultsIsError = false;
+        state.getSearchResultsError = "";
+        state.getSearchResultsIsSuccess = true;
+      })
+      .addCase(getSearchResultsAction.rejected, (state, action) => {
+        state.getSearchResultsData = null;
+        state.getSearchResultsIsLoading = false;
+        state.getSearchResultsIsError = true;
+        state.getSearchResultsError =
+          action.error.message || "An unknown error occurred";
+        state.getSearchResultsIsSuccess = false;
       });
   },
 });

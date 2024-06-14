@@ -15,12 +15,32 @@ export type Restaurant = {
   cuisines: string[];
   menuItems: MenuItem[];
   imageUrl: string;
-  lastUpdated: string;
+  imagePublicId: string;
+  lastUpdated?: string;
+  __v?: number;
 };
+
+export type Pagination = {
+  total: number;
+  page: number;
+  pages: number;
+}
+
+export type SearchDataResponse = {
+  data: Restaurant[];
+  pagination: Pagination;
+}
 
 export type CreateRestaurantPayload = {
   formData: FormData;
   token: string;
+};
+
+export type SearchState = {
+  searchQuery: string;
+  page: number;
+  selectedCuisines: string[];
+  sortOption: string;
 };
 
 export type myRestaurantInitialStateType = {
@@ -44,4 +64,11 @@ export type myRestaurantInitialStateType = {
   updateRestaurantIsError: boolean,
   updateRestaurantError: string,
   updateRestaurantIsSuccess: boolean,
+
+    // getSearchResultsAction
+    getSearchResultsData: SearchDataResponse | null,
+    getSearchResultsIsLoading: boolean,
+    getSearchResultsIsError: boolean,
+    getSearchResultsError: string,
+    getSearchResultsIsSuccess: boolean,
 };
