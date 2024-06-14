@@ -61,7 +61,7 @@ export const createNewRestaurantAction = createAsyncThunk(
 
 export const getMyRestaurantRequest = createAsyncThunk(
   "myRestaurant/getMyRestaurantRequest",
-  async (payload: { token: string }) => {
+  async (payload: { token: string | null }) => {
     const { token } = payload;
     const headers = {
       Authorization: `Bearer ${token}`,
