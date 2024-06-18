@@ -1,3 +1,5 @@
+import CuisineFilter from "@/components/CuisineFilter";
+import PaginationSelector from "@/components/PaginationSelector";
 import SearchBar, { SearchForm } from "@/components/SearchBar";
 import SearchResultCard from "@/components/SearchResultCard";
 import SearchResultInfo from "@/components/SearchResultInfo";
@@ -89,14 +91,14 @@ const SearchPage = () => {
       <div className="p-4">
         <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
           <div id="cuisines-list">
-            {/* <CuisineFilter
+            <CuisineFilter
                 selectedCuisines={searchState.selectedCuisines}
                 onChange={setSelectedCuisines}
                 isExpanded={isExpanded}
                 onExpandedClick={() =>
                   setIsExpanded((prevIsExpanded) => !prevIsExpanded)
                 }
-              /> */}
+              />
           </div>
           <div id="main-content" className="flex flex-col gap-5">
             <SearchBar
@@ -140,11 +142,11 @@ const SearchPage = () => {
                   <SearchResultCard restaurant={restaurant} />
                 ))}
 
-                {/* <PaginationSelector
-                page={getSearchResultsData?.pagination.page}
-                pages={getSearchResultsData?.pagination.pages}
+                <PaginationSelector
+                page={getSearchResultsData?.pagination.page as number}
+                pages={getSearchResultsData?.pagination.pages as number}
                 onPageChange={setPage}
-              /> */}
+              />
               </>
             ) : null}
           </div>
