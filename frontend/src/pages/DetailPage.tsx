@@ -1,3 +1,4 @@
+import CheckoutButton from "@/components/CheckoutButton";
 import MenuItem from "@/components/MenuItem";
 import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
@@ -99,8 +100,16 @@ const DetailPage = () => {
       },
     };
 
-    // const data = await createCheckoutSession(checkoutData);
+    const payload = checkoutData;
+
+    console.log("payload", payload)
+
+    // dispatch action from redux toolkit to perform api request
+
+     // const data = await createCheckoutSession(checkoutData);
     // window.location.href = data.url;
+
+   
   };
 
   useEffect(() => {
@@ -152,11 +161,10 @@ const DetailPage = () => {
                     removeFromCart={removeFromCart}
                   />
                   <CardFooter>
-                    {/* <CheckoutButton
-                disabled={cartItems.length === 0}
-                onCheckout={onCheckout}
-                isLoading={isCheckoutLoading}
-              /> */}
+                    <CheckoutButton
+                      disabled={cartItems.length === 0}
+                      onCheckout={onCheckout}
+                    />
                   </CardFooter>
                 </Card>
               </div>

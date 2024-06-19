@@ -1,4 +1,4 @@
-import { useForm, SubmitHandler  } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,7 +16,10 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
-import { UpdateUserPayload, UpdateUserTypes } from "@/types/userTypes/userTypes";
+import {
+  UpdateUserPayload,
+  UpdateUserTypes,
+} from "@/types/userTypes/userTypes";
 import { UpdateCurrentUserRequest } from "@/redux/features/myUserSlice";
 
 const formSchema = z.object({
@@ -32,33 +35,34 @@ export type UserFormData = z.infer<typeof formSchema>;
 type Props = {
   title?: string;
   buttonText?: string;
+  onCheckout?: (userFormData: UserFormData) => void;
 };
 
 const UserProfileForm = ({
   title = "User Profile",
   buttonText = "Submit",
+  onCheckout,
 }: Props) => {
-  const { getCurrentUserData: currentUser, updateCurrentUserIsLoading, updateCurrentUserIsError, updateCurrentUserData, updateCurrentUserError, updateCurrentUserIsSuccess } = useAppSelector((state) => state.myUser);
+  const { getCurrentUserData: currentUser, updateCurrentUserIsLoading } =
+    useAppSelector((state) => state.myUser);
 
-  console.log("jkdskfhdsjhfl", updateCurrentUserIsError, updateCurrentUserData, updateCurrentUserError, updateCurrentUserIsSuccess)
-
- const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: currentUser ? currentUser : undefined,
   });
 
   useEffect(() => {
-    if(currentUser) {
+    if (currentUser) {
       form.reset(currentUser);
     }
   }, [currentUser, form]);
-  
 
   const { getAccessTokenSilently } = useAuth0();
 
-
-  const handleSave: SubmitHandler<UserFormData> = async (formData: UpdateUserTypes) => {
+  const handleSave: SubmitHandler<UserFormData> = async (
+    formData: UpdateUserTypes
+  ) => {
     const token = await getAccessTokenSilently();
     const payload: UpdateUserPayload = {
       token,
@@ -67,10 +71,20 @@ const UserProfileForm = ({
     dispatch(UpdateCurrentUserRequest(payload));
   };
 
+  const handleSubmit: SubmitHandler<UserFormData> = async (
+    formData: UserFormData
+  ) => {
+    if (onCheckout) {
+      onCheckout(formData);
+    } else {
+      handleSave(formData);
+    }
+  };
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSave)}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="space-y-4 bg-gray-50 rounded-lg md:p-10"
       >
         <div>
