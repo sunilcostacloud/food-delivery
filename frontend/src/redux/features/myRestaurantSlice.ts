@@ -40,6 +40,13 @@ export const myRestaurantInitialState: myRestaurantInitialStateType = {
   getSearchResultsIsError: false,
   getSearchResultsError: "",
   getSearchResultsIsSuccess: false,
+
+  // getRestaurantByIdAction
+  getRestaurantByIdData: null,
+  getRestaurantByIdIsLoading: false,
+  getRestaurantByIdIsError: false,
+  getRestaurantByIdError: "",
+  getRestaurantByIdIsSuccess: false,
 };
 
 export const createNewRestaurantAction = createAsyncThunk(
@@ -120,11 +127,8 @@ export const updateRestaurantAction = createAsyncThunk(
 
 export const getSearchResultsAction = createAsyncThunk(
   "myRestaurant/getSearchResultsAction",
-  async (payload: { token: string, searchState: SearchState, city?: string }) => {
-    const { token, searchState, city } = payload;
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
+  async (payload: { searchState: SearchState; city?: string }) => {
+    const { searchState, city } = payload;
 
     const params = new URLSearchParams();
     params.set("searchQuery", searchState.searchQuery);
@@ -134,10 +138,27 @@ export const getSearchResultsAction = createAsyncThunk(
 
     try {
       const { data } = await axios.get<SearchDataResponse>(
-        `${API_BASE_URL}/api/restaurant/search/${city}?${params.toString()}`,
-        { headers }
+        `${API_BASE_URL}/api/restaurant/search/${city}?${params.toString()}`
       );
 
+      return data;
+    } catch (error) {
+      const axiosError = error as AxiosError<ErrorResponseType>;
+      const errorMessage =
+        axiosError.response?.data?.message || "An unknown error occurred";
+      throw new Error(errorMessage);
+    }
+  }
+);
+
+export const getRestaurantByIdAction = createAsyncThunk(
+  "myRestaurant/getRestaurantByIdAction",
+  async (payload: { id: string }) => {
+    const { id } = payload;
+    try {
+      const { data } = await axios.get<Restaurant>(
+        `${API_BASE_URL}/api/restaurant/getRestaurant/${id}`
+      );
       return data;
     } catch (error) {
       const axiosError = error as AxiosError<ErrorResponseType>;
@@ -276,6 +297,30 @@ export const myRestaurantSlice = createSlice({
         state.getSearchResultsError =
           action.error.message || "An unknown error occurred";
         state.getSearchResultsIsSuccess = false;
+      })
+
+      // getRestaurantByIdAction
+      .addCase(getRestaurantByIdAction.pending, (state) => {
+        state.getRestaurantByIdData = null;
+        state.getRestaurantByIdIsLoading = true;
+        state.getRestaurantByIdIsError = false;
+        state.getRestaurantByIdError = "";
+        state.getRestaurantByIdIsSuccess = false;
+      })
+      .addCase(getRestaurantByIdAction.fulfilled, (state, action) => {
+        state.getRestaurantByIdData = action.payload;
+        state.getRestaurantByIdIsLoading = false;
+        state.getRestaurantByIdIsError = false;
+        state.getRestaurantByIdError = "";
+        state.getRestaurantByIdIsSuccess = true;
+      })
+      .addCase(getRestaurantByIdAction.rejected, (state, action) => {
+        state.getRestaurantByIdData = null;
+        state.getRestaurantByIdIsLoading = false;
+        state.getRestaurantByIdIsError = true;
+        state.getRestaurantByIdError =
+          action.error.message || "An unknown error occurred";
+        state.getRestaurantByIdIsSuccess = false;
       });
   },
 });

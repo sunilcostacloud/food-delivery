@@ -7,7 +7,7 @@ const router = express.Router();
 // /api/restaurant
 
 router.get(
-  "getRestaurant/:restaurantId",
+  "/getRestaurant/:restaurantId",
   param("restaurantId")
     .isString()
     .trim()

@@ -4,6 +4,12 @@ export type MenuItem = {
   price: number;
 };
 
+export type MenuItemType = {
+  _id: string;
+  name: string;
+  price: number;
+};
+
 export type Restaurant = {
   _id: string;
   user: string;
@@ -71,4 +77,11 @@ export type myRestaurantInitialStateType = {
     getSearchResultsIsError: boolean,
     getSearchResultsError: string,
     getSearchResultsIsSuccess: boolean,
+
+    // getRestaurantByIdAction
+    getRestaurantByIdData: Restaurant | null,
+    getRestaurantByIdIsLoading: boolean,
+    getRestaurantByIdIsError: boolean,
+    getRestaurantByIdError: string,
+    getRestaurantByIdIsSuccess: boolean,
 };

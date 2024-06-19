@@ -3,10 +3,10 @@ import PaginationSelector from "@/components/PaginationSelector";
 import SearchBar, { SearchForm } from "@/components/SearchBar";
 import SearchResultCard from "@/components/SearchResultCard";
 import SearchResultInfo from "@/components/SearchResultInfo";
+import SortOptionDropdown from "@/components/SortOptionDropdown";
 import { getSearchResultsAction } from "@/redux/features/myRestaurantSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
 import { SearchState } from "@/types/restaurantTypes/restaurantTypes";
-import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -19,7 +19,6 @@ const SearchPage = () => {
     sortOption: "bestMatch",
   });
   const dispatch = useAppDispatch();
-  const { getAccessTokenSilently } = useAuth0();
 
   const {
     getSearchResultsData,
@@ -71,10 +70,8 @@ const SearchPage = () => {
   };
 
   const getSearchDetails = async () => {
-    const token = await getAccessTokenSilently();
     if (city && city.length > 0) {
       const payload = {
-        token,
         city,
         searchState,
       };
@@ -132,10 +129,10 @@ const SearchPage = () => {
                     total={getSearchResultsData?.pagination.total as number}
                     city={city}
                   />
-                  {/* <SortOptionDropdown
+                  <SortOptionDropdown
                   sortOption={searchState.sortOption}
                   onChange={(value) => setSortOption(value)}
-                /> */}
+                />
                 </div>
 
                 {getSearchResultsData?.data.map((restaurant) => (
