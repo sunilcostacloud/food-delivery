@@ -34,6 +34,10 @@ const CheckoutButton = ({ onCheckout, disabled }: Props) => {
     getCurrentUserIsSuccess,
   } = useAppSelector((state) => state.myUser);
 
+  const { createCheckoutSessionIsLoading } = useAppSelector(
+    (state) => state.order
+  );
+
   useEffect(() => {
     const getCurrentuser = async () => {
       const token = await getAccessTokenSilently();
@@ -57,7 +61,7 @@ const CheckoutButton = ({ onCheckout, disabled }: Props) => {
 
   return (
     <>
-      {!isAuthenticated ? (
+      {!isAuthenticated || createCheckoutSessionIsLoading ? (
         <Button onClick={onLogin} className="bg-orange-500 flex-1">
           Log in to check out
         </Button>

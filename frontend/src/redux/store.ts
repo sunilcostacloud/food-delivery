@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import myUserReducer from "./features/myUserSlice";
 import myRestaurantReducer from "./features/myRestaurantSlice";
+import orderReducer from "./features/orderSlice";
 
 export const store = configureStore({
   reducer: {
     myUser: myUserReducer,
-    myRestaurant: myRestaurantReducer
+    myRestaurant: myRestaurantReducer,
+    order: orderReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

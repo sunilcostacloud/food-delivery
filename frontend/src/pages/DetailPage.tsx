@@ -6,15 +6,19 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Card, CardFooter } from "@/components/ui/card";
 import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
 import { getRestaurantByIdAction } from "@/redux/features/myRestaurantSlice";
+import { createCheckoutSessionRequest, resetcreateCheckoutSessionRequest } from "@/redux/features/orderSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks/hooks";
 import { CartItem } from "@/types/cartTypes/cartTypes";
+import { CheckoutSessionRequest } from "@/types/orderTypes/orderTypes";
 import { MenuItemType } from "@/types/restaurantTypes/restaurantTypes";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from "react";
-
+import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
 const DetailPage = () => {
   const { restaurantId } = useParams();
+  const { getAccessTokenSilently } = useAuth0();
   const dispatch = useAppDispatch();
   const {
     getRestaurantByIdData,
@@ -24,10 +28,19 @@ const DetailPage = () => {
     getRestaurantByIdIsSuccess,
   } = useAppSelector((state) => state.myRestaurant);
 
+  const {
+    createCheckoutSessionData,
+    createCheckoutSessionError,
+    createCheckoutSessionIsError,
+    createCheckoutSessionIsSuccess,
+  } = useAppSelector((state) => state.order);
+
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
     const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
     return storedCartItems ? JSON.parse(storedCartItems) : [];
   });
+
+  console.log("createCheckoutSessionData", createCheckoutSessionData)
 
   const addToCart = (menuItem: MenuItemType) => {
     setCartItems((prevCartItems) => {
@@ -79,8 +92,19 @@ const DetailPage = () => {
     });
   };
 
+  const createCheckoutSessionRequestAction = async (
+    checkoutData: CheckoutSessionRequest
+  ) => {
+    const token = await getAccessTokenSilently();
+    const payload = {
+      token,
+      checkoutData,
+    };
+    dispatch(createCheckoutSessionRequest(payload));
+  };
+
   const onCheckout = async (userFormData: UserFormData) => {
-    if (!getRestaurantByIdData) {
+    if (!getRestaurantByIdData) { // if we do not have a restaurant we need to return
       return;
     }
 
@@ -100,16 +124,10 @@ const DetailPage = () => {
       },
     };
 
-    const payload = checkoutData;
-
-    console.log("payload", payload)
+    // console.log("payload", checkoutData)
 
     // dispatch action from redux toolkit to perform api request
-
-     // const data = await createCheckoutSession(checkoutData);
-    // window.location.href = data.url;
-
-   
+    createCheckoutSessionRequestAction(checkoutData);
   };
 
   useEffect(() => {
@@ -120,6 +138,16 @@ const DetailPage = () => {
       dispatch(getRestaurantByIdAction(payload));
     }
   }, [restaurantId, dispatch]);
+
+  useEffect(() => {
+    if(createCheckoutSessionIsSuccess){
+      dispatch(resetcreateCheckoutSessionRequest())
+      window.location.href = createCheckoutSessionData?.url as string;
+    } else if(createCheckoutSessionIsError){
+      toast(createCheckoutSessionError || "An unknown error occurred", { autoClose: 2000, type: 'error' })
+      dispatch(resetcreateCheckoutSessionRequest())
+    }
+  }, [createCheckoutSessionIsSuccess, createCheckoutSessionIsError]);
 
   return (
     <div>

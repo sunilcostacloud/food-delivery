@@ -46,6 +46,10 @@ const UserProfileForm = ({
   const { getCurrentUserData: currentUser, updateCurrentUserIsLoading } =
     useAppSelector((state) => state.myUser);
 
+    const { createCheckoutSessionIsLoading } = useAppSelector(
+      (state) => state.order
+    );
+
   const dispatch = useAppDispatch();
   const form = useForm<UserFormData>({
     resolver: zodResolver(formSchema),
@@ -161,7 +165,7 @@ const UserProfileForm = ({
             )}
           />
         </div>
-        {updateCurrentUserIsLoading ? (
+        {updateCurrentUserIsLoading || createCheckoutSessionIsLoading ? (
           <LoadingButton />
         ) : (
           <Button type="submit" className="bg-orange-500">
